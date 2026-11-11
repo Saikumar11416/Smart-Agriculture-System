@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -937,5 +936,4 @@ window.addEventListener("load",function(){
 </script>
 </body>
 </html>
-# Smart-Agriculture-System
-Smart Agriculture and Crop Management System
+
