@@ -1,107 +1,528 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Energy Monitor</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriSmart - Smart Agriculture and Crop Management</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f2f7f2;color:#243b2b}
+.sidebar{width:235px;height:100vh;background:#14532d;color:white;position:fixed;padding:22px 14px;overflow-y:auto}
+.logo{text-align:center;font-size:24px;font-weight:bold;padding:12px;margin-bottom:22px}
+.logo span{color:#a3e635}
+.sidebar h4{font-size:10px;color:#a9d4b3;margin:15px 10px}
+.sidebar a{display:block;color:white;text-decoration:none;padding:12px;margin:4px 0;border-radius:7px;font-size:13px}
+.sidebar a:hover,.sidebar a.active{background:#287a48}
+.main{margin-left:235px;padding:25px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:22px}
+.header h1{font-size:24px}
+.header p{font-size:12px;color:#718078;margin-top:6px}
+button{background:#23864b;color:white;border:0;padding:10px 14px;border-radius:7px;cursor:pointer;font-weight:bold;font-size:12px}
+button:hover{background:#176b3a}
+.secondary{background:#e5f3e8;color:#176b3a}
+.hero{background:linear-gradient(120deg,#14532d,#4d9c52);color:white;padding:28px;border-radius:14px;margin-bottom:23px}
+.hero h2{margin-bottom:10px}
+.hero p{font-size:13px;line-height:1.7}
+.section-title{font-size:18px;margin:25px 0 14px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{background:white;padding:17px;border-radius:11px;box-shadow:0 3px 12px #0000000d;margin-bottom:14px;min-width:0}
+.card h3{font-size:14px;margin-bottom:12px}
+.card p{font-size:12px;color:#718078}
+.number{font-size:25px;color:#176b3a;font-weight:bold;margin:12px 0}
+.icon{font-size:25px;margin-bottom:10px}
+.grid-2{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.chart-container{height:250px;position:relative}
+.weather{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.weather-box{background:#edf5ff;padding:15px;border-radius:9px}
+.weather-box h2{color:#245a8d;margin-top:10px}
+.weather-box p{font-size:12px;color:#718078;margin-top:5px}
+.progress{height:9px;background:#e5ece5;border-radius:10px;margin:9px 0;overflow:hidden}
+.progress-bar{height:100%;background:#38a169;border-radius:10px}
+.status{padding:5px 9px;border-radius:20px;background:#e4f5e8;color:#176b3a;font-size:10px}
+.warning{background:#fff2d7;color:#96650a}
+.danger{background:#ffe7e7;color:#b42323}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:12px 9px;text-align:left;border-bottom:1px solid #e5ece5;font-size:11px}
+th{background:#edf5ed;color:#176b3a}
+input,select{width:100%;padding:10px;border:1px solid #d7e2d7;border-radius:7px;margin:7px 0 13px;background:white}
+label{font-size:12px;font-weight:bold}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.result{background:#eaf7ed;padding:14px;margin-top:14px;border-radius:8px;line-height:1.7;font-size:12px;display:none}
+.control{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e5ece5;gap:10px}
+.control p{font-size:12px;font-weight:bold}
+.control small{display:block;font-size:10px;color:#718078;margin-top:4px}
+.switch{width:43px;height:23px;border-radius:20px;background:#bbb;cursor:pointer;position:relative;flex-shrink:0}
+.switch:after{content:"";width:17px;height:17px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:.2s}
+.switch.on{background:#23864b}
+.switch.on:after{left:23px}
+.alert{padding:12px;background:#fff4dd;border-radius:8px;margin:9px 0;font-size:12px;line-height:1.6}
+.alert.green{background:#e8f6eb}
+.alert.red{background:#ffeaea}
+.task{display:flex;align-items:center;gap:9px;margin:13px 0;font-size:12px}
+.task input{width:auto;margin:0}
+footer{text-align:center;padding:25px;font-size:11px;color:#718078}
+@media(max-width:1050px){.cards{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}}
+@media(max-width:700px){.sidebar{position:relative;width:100%;height:auto}.sidebar a{display:inline-block;padding:8px}.main{margin:0;padding:14px}.header h1{font-size:18px}.weather{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+@media(max-width:380px){.cards{grid-template-columns:1fr}}
+</style>
 </head>
+
 <body>
-  <nav class="navbar">
-    <div class="logo">⚡ EnergyTrack</div>
-    <ul class="nav-links">
-      <li><a href="#dashboard">Dashboard</a></li>
-      <li><a href="#devices">Devices</a></li>
-      <li><a href="#reports">Reports</a></li>
-    </ul>
-  </nav>
-  <section class="hero">
-    <h1>Monitor Your Energy Usage</h1>
-    <p>Track real-time power consumption and save costs</p>
-    <button class="btn-start">Get Started</button>
-  </section>
-  <section id="dashboard" class="dashboard">
-    <h2>Live Dashboard</h2>
-    <div class="stats-grid">
-      <div class="stat-card" id="total-usage">
-        <h3>Total Usage</h3><p id="usage-val">0 kWh</p>
-      </div>
-      <div class="stat-card"><h3>Cost Today</h3><p id="cost-val">₹0</p></div>
-      <div class="stat-card"><h3>CO2 Saved</h3><p id="co2-val">0 kg</p></div>
+
+<aside class="sidebar">
+    <div class="logo">🌱 Agri<span>Smart</span></div>
+    <h4>MAIN MENU</h4>
+    <a class="active" href="#dashboard">🏠 Dashboard</a>
+    <a href="#weather">☀ Weather Monitoring</a>
+    <a href="#irrigation">💧 Irrigation Control</a>
+    <a href="#soil">🌍 Soil Monitoring</a>
+    <a href="#crops">🌾 Crop Management</a>
+    <a href="#advisor">🤖 Crop Recommendation</a>
+    <a href="#fertilizer">🧪 Fertilizer Management</a>
+    <a href="#health">🛡 Crop Health</a>
+    <a href="#alerts">🔔 Alerts and Tasks</a>
+    <a href="#finance">💰 Farm Economics</a>
+</aside>
+
+<main class="main">
+
+<header class="header">
+    <div>
+        <h1>Smart Agriculture Dashboard</h1>
+        <p>Smart Agriculture and Crop Management System</p>
     </div>
-    <canvas id="energyChart" width="800" height="300"></canvas>
-  </section>
-  <script src="script.js"></script>
-</body></html>
+    <button onclick="exportReport()">⬇ Export Report</button>
+</header>
 
-style.css (Styling):
+<section id="dashboard">
+    <div class="hero">
+        <h2>Welcome to AgriSmart 🌿</h2>
+        <p>Monitor your farm, manage crops, check soil conditions, control irrigation and improve farm productivity using smart agriculture technology.</p>
+        <p id="date" style="margin-top:12px"></p>
+    </div>
 
-:root {
-  --primary: #1a73e8;
-  --accent: #34a853;
-  --warning: #fbbc04;
-  --danger: #ea4335;
-  --bg: #f0f4f8;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Poppins", sans-serif; background: var(--bg); }
-.navbar { display: flex; justify-content: space-between;
-  align-items: center; padding: 15px 30px;
-  background: var(--primary); color: white; }
-.hero { text-align: center; padding: 80px 20px;
-  background: linear-gradient(135deg, #1a73e8, #34a853); color: white; }
-.stats-grid { display: grid; grid-template-columns: repeat(3,1fr);
-  gap: 20px; padding: 30px; }
-.stat-card { background: white; border-radius: 12px;
-  padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.stat-card h3 { color: var(--primary); font-size: 1rem; }
-.stat-card p { font-size: 2rem; font-weight: 700; color: #333; }
-.btn-start { padding: 14px 36px; background: var(--accent);
-  border: none; border-radius: 30px; color: white;
-  font-size: 1rem; cursor: pointer; transition: 0.3s; }
-.btn-start:hover { transform: scale(1.05); background: #2d9644; }
+    <h2 class="section-title">Farm Overview</h2>
+    <div class="cards">
+        <div class="card">
+            <div class="icon">🌱</div>
+            <p>Total Farm Area</p>
+            <div class="number">25 Acres</div>
+            <span class="status">4 Fields</span>
+        </div>
+        <div class="card">
+            <div class="icon">🌾</div>
+            <p>Active Crops</p>
+            <div class="number" id="cropCount">4</div>
+            <span class="status">Growing</span>
+        </div>
+        <div class="card">
+            <div class="icon">💧</div>
+            <p>Water Usage Today</p>
+            <div class="number" id="waterDisplay">1250 L</div>
+            <span class="status">Sample Reading</span>
+        </div>
+        <div class="card">
+            <div class="icon">📈</div>
+            <p>Farm Productivity</p>
+            <div class="number">92%</div>
+            <span class="status">Good</span>
+        </div>
+    </div>
+</section>
 
-script.js (JavaScript Logic):
+<section id="weather">
+    <h2 class="section-title">Weather Monitoring</h2>
+    <div class="card">
+        <div class="weather">
+            <div class="weather-box">☀️<p>Temperature</p><h2>29°C</h2></div>
+            <div class="weather-box">💧<p>Humidity</p><h2>65%</h2></div>
+            <div class="weather-box">🌧️<p>Rainfall</p><h2>12 mm</h2></div>
+            <div class="weather-box">🌬️<p>Wind Speed</p><h2>8 km/h</h2></div>
+        </div>
+        <p style="margin-top:12px">Sample weather values. Connect a weather API for live forecasts.</p>
+    </div>
+</section>
 
-// Energy data simulation
-const devices = [
-  { name: 'AC', watts: 1500, status: true },
-  { name: 'Refrigerator', watts: 150, status: true },
-  { name: 'Washing Machine', watts: 500, status: false },
-  { name: 'TV', watts: 100, status: true },
-  { name: 'Water Heater', watts: 2000, status: false }
-];
+<h2 class="section-title">Farm Analytics</h2>
+<div class="grid-2">
+    <div class="card">
+        <h3>Weekly Water Usage</h3>
+        <div class="chart-container"><canvas id="waterChart"></canvas></div>
+    </div>
+    <div class="card">
+        <h3>Crop Area Distribution</h3>
+        <div class="chart-container"><canvas id="cropChart"></canvas></div>
+    </div>
+</div>
 
-function calcTotalWatts() {
-  return devices.filter(d => d.status).reduce((s, d) => s + d.watts, 0);
-}
+<section id="irrigation">
+    <h2 class="section-title">Smart Irrigation Management</h2>
+    <div class="grid-2">
+        <div class="card">
+            <h3>Water Pump Control</h3>
+            <div class="control">
+                <div><p>Water Pump</p><small id="pumpStatus">Pump is OFF</small></div>
+                <button id="pumpButton" onclick="togglePump()">Turn ON</button>
+            </div>
+            <div class="control">
+                <div><p>Automatic Irrigation</p><small>Simulated moisture-based control</small></div>
+                <div class="switch on" id="autoSwitch" onclick="toggleAuto()"></div>
+            </div>
+            <div class="control">
+                <div><p>Water Level Alert</p><small>Tank notification</small></div>
+                <div class="switch on" onclick="this.classList.toggle('on')"></div>
+            </div>
+            <button style="margin-top:15px" onclick="resetWater()">Reset Water Usage</button>
+        </div>
 
-function updateDashboard() {
-  const watts = calcTotalWatts();
-  const kwh = (watts / 1000).toFixed(2);
-  const cost = (kwh * 6.5).toFixed(2); // ₹6.5/unit
-  const co2 = (kwh * 0.82).toFixed(2); // 0.82 kg CO2/kWh
-  document.getElementById('usage-val').textContent = kwh + ' kWh';
-  document.getElementById('cost-val').textContent = '₹' + cost;
-  document.getElementById('co2-val').textContent = co2 + ' kg';
-}
+        <div class="card">
+            <h3>Field Sensor Readings</h3>
+            <p>Soil Moisture <b style="float:right" id="moistureValue">38%</b></p>
+            <div class="progress"><div class="progress-bar" id="moistureBar" style="width:38%"></div></div>
+            <p style="margin-top:20px">Water Tank Level <b style="float:right">72%</b></p>
+            <div class="progress"><div class="progress-bar" style="width:72%;background:#3182ce"></div></div>
+            <p>Illustrative sensor values.</p>
+        </div>
+    </div>
+</section>
 
-// Chart initialization
-const ctx = document.getElementById('energyChart').getContext('2d');
-const energyChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ['6AM','9AM','12PM','3PM','6PM','9PM'],
-    datasets: [{
-      label: 'Energy (kWh)',
-      data: [1.2, 2.5, 3.8, 2.9, 4.1, 3.2],
-      borderColor: '#1a73e8', fill: true,
-      backgroundColor: 'rgba(26,115,232,0.1)'
-    }]
-  },
-  options: { responsive: true, scales: { y: { beginAtZero: true } } }
+<section id="soil">
+    <h2 class="section-title">Soil Health Monitoring</h2>
+    <div class="cards">
+        <div class="card"><div class="icon">⚗️</div><p>Soil pH</p><div class="number">6.8</div><span class="status">Near Neutral</span></div>
+        <div class="card"><div class="icon">🧪</div><p>Nitrogen (N)</p><div class="number">65</div><span class="status">Sample Index</span></div>
+        <div class="card"><div class="icon">🧫</div><p>Phosphorus (P)</p><div class="number">48</div><span class="status">Sample Index</span></div>
+        <div class="card"><div class="icon">🌿</div><p>Potassium (K)</p><div class="number">72</div><span class="status">Sample Index</span></div>
+    </div>
+</section>
+
+<section id="crops">
+    <h2 class="section-title">Crop and Field Management</h2>
+    <div class="card table-wrap">
+        <button onclick="addCrop()" style="margin-bottom:15px">+ Add New Crop</button>
+        <table id="cropTable">
+            <thead>
+                <tr><th>Crop Name</th><th>Field</th><th>Area</th><th>Growth</th><th>Harvest</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Rice</td><td>Field A</td><td>8 Acres</td><td>85%</td><td>Dec 2026</td><td><span class="status">Healthy</span></td><td><button onclick="viewCrop('Rice')">View</button></td></tr>
+                <tr><td>Wheat</td><td>Field B</td><td>5 Acres</td><td>65%</td><td>Jan 2027</td><td><span class="status">Growing</span></td><td><button onclick="viewCrop('Wheat')">View</button></td></tr>
+                <tr><td>Maize</td><td>Field C</td><td>4 Acres</td><td>90%</td><td>Nov 2026</td><td><span class="status">Healthy</span></td><td><button onclick="viewCrop('Maize')">View</button></td></tr>
+                <tr><td>Cotton</td><td>Field D</td><td>3 Acres</td><td>45%</td><td>Feb 2027</td><td><span class="status warning">Monitor</span></td><td><button onclick="viewCrop('Cotton')">View</button></td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section id="advisor">
+    <h2 class="section-title">Smart Crop Recommendation</h2>
+    <div class="grid-2">
+        <div class="card">
+            <h3>Enter Farm Details</h3>
+            <div class="form-grid">
+                <div><label>Soil Type</label><select id="soilType"><option value="loamy">Loamy Soil</option><option value="clay">Clay Soil</option><option value="sandy">Sandy Soil</option><option value="black">Black Soil</option></select></div>
+                <div><label>Season</label><select id="season"><option value="kharif">Kharif</option><option value="rabi">Rabi</option><option value="summer">Summer</option></select></div>
+                <div><label>Water Availability</label><select id="waterLevel"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div>
+                <div><label>Land Area (Acres)</label><input type="number" id="farmArea" value="2" min="0.1" step="0.1"></div>
+            </div>
+            <button onclick="recommendCrop()">Generate Recommendation</button>
+            <div class="result" id="recommendation"></div>
+        </div>
+        <div class="card" id="fertilizer">
+            <h3>Fertilizer Management</h3>
+            <div class="control"><div><p>Soil Test</p><small>Review nutrient levels</small></div><span class="status warning">Pending</span></div>
+            <div class="control"><div><p>Fertilizer Planning</p><small>Check crop requirements</small></div><span class="status">Planned</span></div>
+            <div class="control"><div><p>Application Records</p><small>Maintain field records</small></div><span class="status">Required</span></div>
+            <p style="margin-top:12px">Confirm fertilizer type and dosage using soil-test results and local agricultural advice.</p>
+        </div>
+    </div>
+</section>
+
+<section id="health">
+    <h2 class="section-title">Crop Health and Pest Monitoring</h2>
+    <div class="grid-3">
+        <div class="card"><div class="icon">🛡️</div><h3>Crop Health</h3><div class="number">Good</div><p>Sample overall crop health.</p></div>
+        <div class="card"><div class="icon">🐛</div><h3>Pest Monitoring</h3><div class="number">Review</div><p>Inspect plants for pest activity.</p></div>
+        <div class="card"><div class="icon">🍃</div><h3>Disease Monitoring</h3><div class="number">Active</div><p>Inspect leaves and stems regularly.</p></div>
+    </div>
+</section>
+
+<section id="alerts">
+    <h2 class="section-title">Alerts and Farm Tasks</h2>
+    <div class="grid-2">
+        <div class="card">
+            <h3>System Alerts</h3>
+            <div class="alert">⚠️ Soil moisture is below the preferred range. Review irrigation needs.</div>
+            <div class="alert green">✅ Rice crop growth is progressing well in the sample record.</div>
+            <div class="alert red">🔔 Review cotton field for possible pest activity.</div>
+        </div>
+        <div class="card">
+            <h3>Daily Task List</h3>
+            <div id="taskList">
+                <label class="task"><input type="checkbox">Inspect rice field</label>
+                <label class="task"><input type="checkbox">Check water tank</label>
+                <label class="task"><input type="checkbox">Record crop growth</label>
+            </div>
+            <button onclick="addTask()">+ Add Task</button>
+        </div>
+    </div>
+</section>
+
+<section id="finance">
+    <h2 class="section-title">Farm Economics</h2>
+    <div class="cards">
+        <div class="card"><div class="icon">💰</div><p>Estimated Expenses</p><div class="number">₹42,500</div></div>
+        <div class="card"><div class="icon">🌾</div><p>Expected Yield</p><div class="number">18.5 T</div></div>
+        <div class="card"><div class="icon">📈</div><p>Expected Revenue</p><div class="number">₹1.25 L</div></div>
+        <div class="card"><div class="icon">💹</div><p>Estimated Margin</p><div class="number">₹82,500</div></div>
+    </div>
+</section>
+
+<footer>
+    🌱 AgriSmart - Smart Agriculture and Crop Management System<br><br>
+    Educational demonstration project. All readings are sample data.
+</footer>
+
+</main>
+
+<script>
+// DATE
+document.getElementById("date").textContent =
+"Today: " + new Date().toLocaleDateString("en-IN", {
+    weekday:"long",year:"numeric",month:"long",day:"numeric"
 });
 
-setInterval(updateDashboard, 5000); // refresh every 5s
-updateDashboard();
+// WATER USAGE
+let waterUsed = 1250;
+
+function updateWater(){
+    document.getElementById("waterDisplay").textContent =
+    waterUsed.toLocaleString("en-IN") + " L";
+}
+
+function resetWater(){
+    waterUsed = 0;
+    updateWater();
+}
+
+// PUMP CONTROL
+let pumpOn = false;
+
+function togglePump(){
+    pumpOn = !pumpOn;
+
+    document.getElementById("pumpStatus").textContent =
+        pumpOn ? "Pump is ON" : "Pump is OFF";
+
+    document.getElementById("pumpButton").textContent =
+        pumpOn ? "Turn OFF" : "Turn ON";
+
+    if(pumpOn){
+        waterUsed += 50;
+        updateWater();
+    }
+}
+
+// AUTOMATIC IRRIGATION DEMO
+let autoOn = true;
+
+function toggleAuto(){
+    autoOn = !autoOn;
+    document.getElementById("autoSwitch")
+        .classList.toggle("on",autoOn);
+
+    alert(autoOn ?
+        "Automatic irrigation enabled in demo." :
+        "Automatic irrigation disabled in demo.");
+}
+
+// MOISTURE
+let moisture = 38;
+
+function updateMoisture(){
+    document.getElementById("moistureValue").textContent =
+        moisture + "%";
+    document.getElementById("moistureBar").style.width =
+        moisture + "%";
+}
+
+// CROP RECOMMENDATION
+function recommendCrop(){
+    const soil = document.getElementById("soilType").value;
+    const season = document.getElementById("season").value;
+    const water = document.getElementById("waterLevel").value;
+    const area = Number(document.getElementById("farmArea").value);
+
+    if(!Number.isFinite(area) || area <= 0){
+        alert("Enter a valid farm area.");
+        return;
+    }
+
+    let crops;
+
+    if(season === "rabi"){
+        crops = ["Wheat","Chickpea","Mustard"];
+    }else if(season === "summer"){
+        crops = ["Green Gram","Watermelon","Vegetables"];
+    }else if(water === "low"){
+        crops = ["Millets","Pulses","Groundnut"];
+    }else if(soil === "clay"){
+        crops = ["Rice","Sugarcane","Wheat"];
+    }else if(soil === "sandy"){
+        crops = ["Groundnut","Millets","Watermelon"];
+    }else if(soil === "black"){
+        crops = ["Cotton","Soybean","Millets"];
+    }else{
+        crops = ["Maize","Wheat","Pulses"];
+    }
+
+    const result = document.getElementById("recommendation");
+    result.style.display = "block";
+    result.innerHTML =
+        "<b>Recommended Crops:</b> " + crops.join(", ") +
+        "<br><b>Farm Area:</b> " + area + " Acres" +
+        "<br><b>Soil:</b> " + soil +
+        "<br><b>Season:</b> " + season +
+        "<br><b>Water:</b> " + water +
+        "<br><br><small>General demo suggestions only. Verify suitability with local agricultural experts.</small>";
+}
+
+// ADD CROP
+function addCrop(){
+    const name = prompt("Enter crop name:");
+    if(!name || !name.trim()) return;
+
+    const area = Number(prompt("Enter crop area in acres:"));
+    if(!Number.isFinite(area) || area <= 0){
+        alert("Enter a valid area.");
+        return;
+    }
+
+    const table = document.querySelector("#cropTable tbody");
+    const row = table.insertRow();
+    const values = [
+        name.trim(),"New Field",area+" Acres","0%","Not Set","New"
+    ];
+
+    values.forEach(value=>{
+        const cell = row.insertCell();
+        cell.textContent = value;
+    });
+
+    const actionCell = row.insertCell();
+    const button = document.createElement("button");
+    button.textContent = "View";
+    button.onclick = ()=>viewCrop(name.trim());
+    actionCell.appendChild(button);
+
+    document.getElementById("cropCount").textContent =
+        Number(document.getElementById("cropCount").textContent)+1;
+}
+
+// VIEW CROP
+function viewCrop(name){
+    alert("Crop: "+name+
+    "\nThis is a sample crop record. Database integration is required for saved field history.");
+}
+
+// ADD TASK
+function addTask(){
+    const task = prompt("Enter farm task:");
+    if(!task || !task.trim()) return;
+
+    const label = document.createElement("label");
+    label.className = "task";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(task.trim()));
+
+    document.getElementById("taskList").appendChild(label);
+}
+
+// EXPORT REPORT
+function exportReport(){
+    const rows = [
+        ["AGRISMART FARM REPORT"],
+        ["Date",new Date().toLocaleDateString("en-IN")],
+        ["Farm Area","25 Acres"],
+        ["Active Crops",document.getElementById("cropCount").textContent],
+        ["Water Usage",waterUsed+" Litres"],
+        ["Pump Status",pumpOn?"ON":"OFF"],
+        ["Soil Moisture",moisture+"%"],
+        ["Productivity","92%"],
+        ["Note","Sample demonstration data"]
+    ];
+
+    const csv = rows.map(row=>
+        row.map(value=>'"'+String(value).replace(/"/g,'""')+'"').join(",")
+    ).join("\n");
+
+    const blob = new Blob([csv],{type:"text/csv"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "AgriSmart_Farm_Report.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+}
+
+// WATER USAGE CHART
+new Chart(document.getElementById("waterChart"),{
+    type:"line",
+    data:{
+        labels:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        datasets:[{
+            label:"Water Usage (Litres)",
+            data:[900,1100,980,1250,1180,1050,1250],
+            borderColor:"#23864b",
+            backgroundColor:"rgba(35,134,75,0.15)",
+            fill:true,
+            tension:0.4
+        }]
+    },
+    options:{
+        responsive:true,
+        maintainAspectRatio:false
+    }
+});
+
+// CROP DISTRIBUTION CHART
+new Chart(document.getElementById("cropChart"),{
+    type:"doughnut",
+    data:{
+        labels:["Rice","Wheat","Maize","Cotton","Other"],
+        datasets:[{
+            data:[8,5,4,3,5],
+            backgroundColor:[
+                "#176b3a","#82b85a","#e5b84d","#6aa9a0","#b7c8bb"
+            ]
+        }]
+    },
+    options:{
+        responsive:true,
+        maintainAspectRatio:false
+    }
+});
+
+// NAVIGATION ACTIVE LINK
+document.querySelectorAll(".sidebar a").forEach(link=>{
+    link.addEventListener("click",()=>{
+        document.querySelectorAll(".sidebar a")
+            .forEach(item=>item.classList.remove("active"));
+        link.classList.add("active");
+    });
+});
+</script>
+
+</body>
+</html>
